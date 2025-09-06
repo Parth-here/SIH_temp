@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
 import {
   IoPersonOutline,
   IoPeopleOutline,
@@ -12,11 +11,9 @@ import {
   IoShieldCheckmarkOutline,
   IoWalletOutline,
   IoNewspaperOutline,
-  IoPersonAddOutline,
-  IoCloseOutline,
-  IoRefreshOutline
+  IoPersonAddOutline
 } from 'react-icons/io5'
-import { Card, CardHeader, CardTitle, CardContent, Button, Modal } from '../ui'
+import { Card, CardHeader, CardTitle, CardContent, Button } from '../ui'
 import { useAuth } from '../../hooks/useAuth'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
@@ -61,15 +58,68 @@ const recentAdminActivities = [
   }
 ]
 
-// This will be defined inside the component to access handleNavigation
+const adminQuickActions: Array<{
+  title: string;
+  description: string;
+  icon: any;
+  color: string;
+  action: () => void;
+  showBadge?: boolean;
+}> = [
+  {
+    title: 'Pending Approvals',
+    description: 'Review user registrations',
+    icon: IoPersonAddOutline,
+    color: 'bg-orange-500',
+    action: () => window.location.href = '/approvals',
+    showBadge: true
+  },
+  {
+    title: 'Add New Student',
+    description: 'Register a new student',
+    icon: IoPersonOutline,
+    color: 'bg-blue-500',
+    action: () => console.log('Add student')
+  },
+  {
+    title: 'Hire Teacher',
+    description: 'Add new faculty member',
+    icon: IoPeopleOutline,
+    color: 'bg-green-500',
+    action: () => console.log('Hire teacher')
+  },
+  {
+    title: 'Create Course',
+    description: 'Set up a new course',
+    icon: IoBookOutline,
+    color: 'bg-purple-500',
+    action: () => console.log('Create course')
+  },
+  {
+    title: 'System Reports',
+    description: 'View detailed analytics',
+    icon: IoStatsChartOutline,
+    color: 'bg-orange-500',
+    action: () => console.log('View reports')
+  },
+  {
+    title: 'Announcements',
+    description: 'Send system-wide notifications',
+    icon: IoNewspaperOutline,
+    color: 'bg-indigo-500',
+    action: () => console.log('Send announcement')
+  },
+  {
+    title: 'Security Settings',
+    description: 'Manage system security',
+    icon: IoShieldCheckmarkOutline,
+    color: 'bg-red-500',
+    action: () => console.log('Security settings')
+  }
+]
 
 export default function AdminDashboard() {
   const { dbUser } = useAuth()
-  const [showQuickActions, setShowQuickActions] = useState(false)
-  const [isSeedingData, setIsSeedingData] = useState(false)
-  const [seedStatus, setSeedStatus] = useState<string>('')
-  const [isNavigating, setIsNavigating] = useState(false)
-  
   const pendingApprovalsCount = useQuery(api.people.getPendingApprovalsCount)
   
   // Fetch real data from the database
@@ -79,121 +129,17 @@ export default function AdminDashboard() {
   const allDepartments = useQuery(api.departments.getAllDepartments)
   
   // Data seeding for development
-  const seedAllData = useMutation(api.seed.seedAllData)
-  
-  const handleAnalytics = () => {
-    try {
-      setIsNavigating(true)
-      window.location.href = '/analytics'
-    } catch (error) {
-      console.error('Error navigating to analytics:', error)
-      setIsNavigating(false)
-    }
-  }
-  
-  const handleQuickActions = () => {
-    setShowQuickActions(true)
-  }
-  
-  const handleNavigation = (url: string) => {
-    try {
-      setIsNavigating(true)
-      window.location.href = url
-    } catch (error) {
-      console.error('Error navigating:', error)
-      setIsNavigating(false)
-    }
-  }
-
-  // Admin quick actions with proper navigation
-  const adminQuickActions: Array<{
-    title: string;
-    description: string;
-    icon: any;
-    color: string;
-    action: () => void;
-    showBadge?: boolean;
-  }> = [
-    {
-      title: 'Pending Approvals',
-      description: 'Review user registrations',
-      icon: IoPersonAddOutline,
-      color: 'bg-orange-500',
-      action: () => handleNavigation('/approvals'),
-      showBadge: true
-    },
-    {
-      title: 'Add New Student',
-      description: 'Register a new student',
-      icon: IoPersonOutline,
-      color: 'bg-blue-500',
-      action: () => handleNavigation('/people?action=add&role=student')
-    },
-    {
-      title: 'Hire Teacher',
-      description: 'Add new faculty member',
-      icon: IoPeopleOutline,
-      color: 'bg-green-500',
-      action: () => handleNavigation('/people?action=add&role=teacher')
-    },
-    {
-      title: 'Create Course',
-      description: 'Set up a new course',
-      icon: IoBookOutline,
-      color: 'bg-purple-500',
-      action: () => handleNavigation('/courses?action=add')
-    },
-    {
-      title: 'System Reports',
-      description: 'View detailed analytics',
-      icon: IoStatsChartOutline,
-      color: 'bg-orange-500',
-      action: () => handleNavigation('/reports')
-    },
-    {
-      title: 'Announcements',
-      description: 'Send system-wide notifications',
-      icon: IoNewspaperOutline,
-      color: 'bg-indigo-500',
-      action: () => handleNavigation('/messages?action=announcement')
-    },
-    {
-      title: 'Security Settings',
-      description: 'Manage system security',
-      icon: IoShieldCheckmarkOutline,
-      color: 'bg-red-500',
-      action: () => handleNavigation('/settings')
-    }
-  ]
+  const seedDepartments = useMutation(api.seed.seedDepartments)
+  const seedCourses = useMutation(api.seed.seedCourses)
   
   const handleSeedData = async () => {
-    setIsSeedingData(true)
-    setSeedStatus('Adding sample data...')
-    
     try {
-      const result = await seedAllData({})
-      
-      if (result.error) {
-        setSeedStatus(`Error: ${result.error}`)
-        setTimeout(() => {
-          setSeedStatus('')
-          setIsSeedingData(false)
-        }, 5000)
-      } else {
-        setSeedStatus(`Successfully added ${result.totalCreated} items!`)
-        setTimeout(() => {
-          setSeedStatus('')
-          setIsSeedingData(false)
-          window.location.reload()
-        }, 2000)
-      }
+      await seedDepartments({})
+      await seedCourses({})
+      alert('Sample data added successfully! Refresh the page to see the changes.')
     } catch (error) {
       console.error('Error seeding data:', error)
-      setSeedStatus('Error adding sample data. Check console for details.')
-      setTimeout(() => {
-        setSeedStatus('')
-        setIsSeedingData(false)
-      }, 5000)
+      alert('Error adding sample data. Check console for details.')
     }
   }
   
@@ -280,26 +226,12 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-          <Button 
-            onClick={handleAnalytics}
-            disabled={isNavigating}
-            variant="outline" 
-            size="lg" 
-            className="shadow-md hover:shadow-lg w-full sm:w-auto whitespace-nowrap disabled:opacity-50"
-          >
-            {isNavigating ? (
-              <IoRefreshOutline className="w-5 h-5 mr-2 animate-spin" />
-            ) : (
-              <IoEyeOutline className="w-5 h-5 mr-2" />
-            )}
+          <Button variant="outline" size="lg" className="shadow-md hover:shadow-lg w-full sm:w-auto whitespace-nowrap">
+            <IoEyeOutline className="w-5 h-5 mr-2" />
             <span className="hidden sm:inline">Analytics</span>
             <span className="sm:hidden">Analytics</span>
           </Button>
-          <Button 
-            onClick={handleQuickActions}
-            size="lg" 
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl w-full sm:w-auto whitespace-nowrap"
-          >
+          <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl w-full sm:w-auto whitespace-nowrap">
             <IoAddOutline className="w-5 h-5 mr-2" />
             <span className="hidden sm:inline">Quick Actions</span>
             <span className="sm:hidden">Actions</span>
@@ -308,17 +240,12 @@ export default function AdminDashboard() {
           {import.meta.env.DEV && (
             <Button 
               onClick={handleSeedData}
-              disabled={isSeedingData}
               variant="outline" 
               size="lg" 
-              className="shadow-md hover:shadow-lg w-full sm:w-auto whitespace-nowrap border-green-300 text-green-700 hover:bg-green-50 disabled:opacity-50"
+              className="shadow-md hover:shadow-lg w-full sm:w-auto whitespace-nowrap border-green-300 text-green-700 hover:bg-green-50"
             >
-              {isSeedingData ? (
-                <IoRefreshOutline className="w-5 h-5 mr-2 animate-spin" />
-              ) : (
-                <IoAddOutline className="w-5 h-5 mr-2" />
-              )}
-              {isSeedingData ? 'Adding...' : 'Add Sample Data'}
+              <IoAddOutline className="w-5 h-5 mr-2" />
+              Add Sample Data
             </Button>
           )}
         </div>
@@ -343,62 +270,15 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2">
               <Button
                 onClick={handleSeedData}
-                disabled={isSeedingData}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {isSeedingData ? (
-                  <IoRefreshOutline className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <IoAddOutline className="w-4 h-4 mr-2" />
-                )}
-                {isSeedingData ? 'Adding...' : 'Add Sample Data'}
+                <IoAddOutline className="w-4 h-4 mr-2" />
+                Add Sample Data
               </Button>
-              <span className="text-sm text-blue-600">This will add departments, people, and courses for testing.</span>
+              <span className="text-sm text-blue-600">This will add departments and courses for testing.</span>
             </div>
           )}
-        </motion.div>
-      )}
-
-      {/* Navigation Status Display */}
-      {isNavigating && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4"
-        >
-          <div className="flex items-center gap-3">
-            <IoRefreshOutline className="w-6 h-6 text-blue-600 animate-spin" />
-            <p className="text-blue-700 font-medium">Navigating to page...</p>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Seed Status Display */}
-      {seedStatus && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`rounded-lg p-4 ${
-            seedStatus.includes('Error') || seedStatus.includes('error')
-              ? 'bg-gradient-to-r from-red-50 to-pink-50 border border-red-200'
-              : 'bg-gradient-to-r from-green-50 to-blue-50 border border-green-200'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            {seedStatus.includes('Error') || seedStatus.includes('error') ? (
-              <IoCloseOutline className="w-6 h-6 text-red-600" />
-            ) : (
-              <IoRefreshOutline className="w-6 h-6 text-green-600 animate-spin" />
-            )}
-            <p className={`font-medium ${
-              seedStatus.includes('Error') || seedStatus.includes('error')
-                ? 'text-red-700'
-                : 'text-green-700'
-            }`}>
-              {seedStatus}
-            </p>
-          </div>
         </motion.div>
       )}
 
@@ -514,8 +394,7 @@ export default function AdminDashboard() {
                 >
                   <Button
                     variant="ghost"
-                    disabled={isNavigating}
-                    className="w-full justify-start p-3 sm:p-4 h-auto hover:bg-gray-50 hover:shadow-md transition-all relative disabled:opacity-50"
+                    className="w-full justify-start p-3 sm:p-4 h-auto hover:bg-gray-50 hover:shadow-md transition-all relative"
                     onClick={action.action}
                   >
                     <div className="flex items-center gap-2 sm:gap-3 w-full min-w-0">
@@ -539,68 +418,6 @@ export default function AdminDashboard() {
           </Card>
         </motion.div>
       </div>
-
-      {/* Quick Actions Modal */}
-      <Modal
-        isOpen={showQuickActions}
-        onClose={() => setShowQuickActions(false)}
-        title="Quick Actions"
-        size="lg"
-      >
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {adminQuickActions.map((action, index) => (
-              <motion.div
-                key={action.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Button
-                  variant="ghost"
-                  disabled={isNavigating}
-                  className="w-full justify-start p-4 h-auto hover:bg-gray-50 hover:shadow-md transition-all border border-gray-200 disabled:opacity-50"
-                  onClick={() => {
-                    action.action()
-                    setShowQuickActions(false)
-                  }}
-                >
-                  <div className="flex items-center gap-4 w-full">
-                    <div className={`p-3 ${action.color} rounded-xl text-white shadow-lg`}>
-                      <action.icon className="w-6 h-6" />
-                    </div>
-                    <div className="text-left flex-1">
-                      <div className="font-semibold text-gray-900 text-lg">{action.title}</div>
-                      <div className="text-sm text-gray-600">{action.description}</div>
-                    </div>
-                    {action.showBadge && pendingApprovalsCount && pendingApprovalsCount > 0 && (
-                      <div className="bg-red-500 text-white text-sm rounded-full h-8 w-8 flex items-center justify-center font-bold">
-                        {pendingApprovalsCount > 99 ? '99+' : pendingApprovalsCount}
-                      </div>
-                    )}
-                  </div>
-                </Button>
-              </motion.div>
-            ))}
-          </div>
-          
-          <div className="pt-4 border-t border-gray-200">
-            <div className="flex justify-between items-center">
-              <p className="text-sm text-gray-600">
-                Choose an action to get started with managing your institution
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => setShowQuickActions(false)}
-                className="flex items-center gap-2"
-              >
-                <IoCloseOutline className="w-4 h-4" />
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Modal>
     </motion.div>
   )
 }
