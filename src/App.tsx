@@ -1,39 +1,81 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { SignInButton } from '@clerk/clerk-react'
-import DashboardLayout from './components/dashboard/DashboardLayout'
+import Layout from './components/layout/Layout'
 import DepartmentList from './components/departments/DepartmentList'
 import PeopleList from './components/people/PeopleList'
+import Dashboard from './pages/Dashboard'
 import UserSetup from './components/auth/UserSetup'
+import ApprovalStatusHandler from './components/auth/ApprovalStatusHandler'
 import { useAuth } from './hooks/useAuth'
-import './App.css'
+
+// Admin Pages
+import AnalyticsPage from './pages/admin/AnalyticsPage'
+import ReportsPage from './pages/admin/ReportsPage'
+import SettingsPage from './pages/admin/SettingsPage'
+import ApprovalsPage from './pages/admin/ApprovalsPage'
+
+// Teacher Pages
+import ClassesPage from './pages/teacher/ClassesPage'
+import StudentsPage from './pages/teacher/StudentsPage'
+import AssignmentsPage from './pages/teacher/AssignmentsPage'
+import GradesPage from './pages/teacher/GradesPage'
+import SchedulePage from './pages/shared/SchedulePage'
+import MessagesPage from './pages/shared/MessagesPage'
+
+// Student Pages
+import MyCoursesPage from './pages/student/MyCoursesPage'
+import LibraryPage from './pages/student/LibraryPage'
+
+// Shared Pages
+import CoursesPage from './pages/shared/CoursesPage'
+import AttendancePage from './pages/shared/AttendancePage'
 
 function App() {
-  const { isSignedIn, isLoaded, dbUser } = useAuth()
+  const { isSignedIn, isLoaded, dbUser, approvalStatus, role } = useAuth()
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-secondary-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="text-secondary-600 mt-4 text-lg">Loading...</p>
+        </div>
       </div>
     )
   }
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
-          <h1 className="text-2xl font-bold mb-4 text-gray-900">
-            Academic Management System
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Please sign in to access the system
-          </p>
-          <div className="flex justify-center">
-            <SignInButton mode="modal">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                Sign In
-              </button>
-            </SignInButton>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-secondary-50 to-primary-100">
+        <div className="max-w-md w-full mx-4">
+          <div className="bg-white rounded-2xl shadow-soft-xl p-8 text-center">
+            <div className="mb-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-white">🎓</span>
+              </div>
+              <h1 className="text-2xl font-bold text-secondary-900 mb-2">
+                EduSystem
+              </h1>
+              <p className="text-secondary-600">
+                Academic Management Platform
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <p className="text-secondary-700 mb-6">
+                Welcome! Please sign in to access your academic dashboard and manage your institution's data.
+              </p>
+              
+              <SignInButton mode="modal">
+                <button className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                  Sign In to Continue
+                </button>
+              </SignInButton>
+              
+              <p className="text-xs text-secondary-500 mt-4">
+                Secure authentication powered by Clerk
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -45,79 +87,50 @@ function App() {
     return <UserSetup />;
   }
 
-  const Dashboard = () => (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Stats Cards */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded">
-              <div className="w-4 h-4 bg-blue-600 rounded"></div>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Students</p>
-              <p className="text-2xl font-bold text-gray-900">0</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded">
-              <div className="w-4 h-4 bg-green-600 rounded"></div>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Teachers</p>
-              <p className="text-2xl font-bold text-gray-900">0</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded">
-              <div className="w-4 h-4 bg-yellow-600 rounded"></div>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Courses</p>
-              <p className="text-2xl font-bold text-gray-900">0</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded">
-              <div className="w-4 h-4 bg-purple-600 rounded"></div>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Departments</p>
-              <p className="text-2xl font-bold text-gray-900">0</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600">No recent activity to display.</p>
-        </div>
-      </div>
-    </div>
-  );
+  // If user exists but is not approved (and not admin), show approval status
+  if (isSignedIn && dbUser && approvalStatus !== "approved" && role !== "admin") {
+    return (
+      <ApprovalStatusHandler 
+        approvalStatus={approvalStatus}
+        userRole={role}
+        userName={dbUser.full_name.split(' ')[0]}
+      />
+    );
+  }
 
   return (
     <BrowserRouter>
-      <DashboardLayout>
+      <div className="w-full min-h-screen">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/departments" element={<DepartmentList />} />
-          <Route path="/people" element={<PeopleList />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            
+            {/* Admin Routes */}
+            <Route path="analytics" element={role === 'admin' ? <AnalyticsPage /> : <Navigate to="/" />} />
+            <Route path="reports" element={role === 'admin' ? <ReportsPage /> : <Navigate to="/" />} />
+            <Route path="settings" element={role === 'admin' ? <SettingsPage /> : <Navigate to="/" />} />
+            <Route path="approvals" element={role === 'admin' ? <ApprovalsPage /> : <Navigate to="/" />} />
+            <Route path="departments" element={role === 'admin' ? <DepartmentList /> : <Navigate to="/" />} />
+            <Route path="people" element={role === 'admin' ? <PeopleList /> : <Navigate to="/" />} />
+            
+            {/* Teacher Routes */}
+            <Route path="classes" element={role === 'teacher' ? <ClassesPage /> : <Navigate to="/" />} />
+            <Route path="students" element={role === 'teacher' ? <StudentsPage /> : <Navigate to="/" />} />
+            <Route path="assignments" element={role === 'teacher' ? <AssignmentsPage /> : <Navigate to="/" />} />
+            <Route path="grades" element={role === 'teacher' ? <GradesPage /> : <Navigate to="/" />} />
+            
+            {/* Student Routes */}
+            <Route path="my-courses" element={role === 'student' ? <MyCoursesPage /> : <Navigate to="/" />} />
+            <Route path="library" element={role === 'student' ? <LibraryPage /> : <Navigate to="/" />} />
+            
+            {/* Shared Routes */}
+            <Route path="courses" element={<CoursesPage />} />
+            <Route path="schedule" element={<SchedulePage />} />
+            <Route path="messages" element={<MessagesPage />} />
+            <Route path="attendance" element={<AttendancePage />} />
+          </Route>
         </Routes>
-      </DashboardLayout>
+      </div>
     </BrowserRouter>
   )
 }

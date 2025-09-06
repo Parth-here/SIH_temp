@@ -90,10 +90,10 @@ export const updateCourse = mutation({
     const { id, ...updates } = args;
     
     // If updating course_id, check for duplicates
-    if (updates.course_id) {
+    if (updates.course_id !== undefined) {
       const existingCourse = await ctx.db
         .query("courses")
-        .withIndex("by_course_id", (q) => q.eq("course_id", updates.course_id))
+        .withIndex("by_course_id", (q) => q.eq("course_id", updates.course_id!))
         .first();
       
       if (existingCourse && existingCourse._id !== id) {

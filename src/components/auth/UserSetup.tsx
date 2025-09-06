@@ -43,6 +43,7 @@ export default function UserSetup() {
         email: formData.email,
         phone: formData.phone || undefined,
         role: formData.role,
+        approval_status: formData.role === "admin" ? "approved" as const : "pending" as const,
         
         // Student fields
         er_no: formData.role === "student" ? formData.er_no || undefined : undefined,

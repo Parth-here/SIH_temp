@@ -77,13 +77,16 @@ export const getAttendanceByDateRange = query({
     courseId: v.optional(v.id("courses"))
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("attendance");
+    let results;
     
     if (args.studentId) {
-      query = query.withIndex("by_student", (q) => q.eq("student_id", args.studentId));
+      results = await ctx.db
+        .query("attendance")
+        .withIndex("by_student", (q) => q.eq("student_id", args.studentId!))
+        .collect();
+    } else {
+      results = await ctx.db.query("attendance").collect();
     }
-    
-    const results = await query.collect();
     
     return results.filter(record => {
       const recordDate = record.date;

@@ -23,5 +23,9 @@ export function useAuth() {
     isAdmin: dbUser?.role === "admin",
     isTeacher: dbUser?.role === "teacher",
     isStudent: dbUser?.role === "student",
+    isApproved: dbUser?.approval_status === "approved",
+    isPending: dbUser?.approval_status === "pending",
+    isRejected: dbUser?.approval_status === "rejected",
+    approvalStatus: dbUser?.approval_status,
   };
 }

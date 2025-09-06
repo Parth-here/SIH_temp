@@ -1,2 +1,3 @@
 // Re-export Person and Id from person.ts
-export { Person, Id } from "./person.js";
+export type { Person } from "./person.js";
+export type { Id } from "./common.js";

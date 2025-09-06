@@ -28,6 +28,7 @@ export default defineSchema({
     email: v.string(),
     phone: v.optional(v.string()),
     role: v.union(v.literal("student"), v.literal("teacher"), v.literal("admin")),
+    approval_status: v.optional(v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected"))), // Admin approval status
     
     // Student-specific fields
     er_no: v.optional(v.string()), // Student enrollment number
@@ -47,7 +48,8 @@ export default defineSchema({
   }).index("by_user_id", ["user_id"])
     .index("by_role", ["role"])
     .index("by_department", ["department_id"])
-    .index("by_er_no", ["er_no"]),
+    .index("by_er_no", ["er_no"])
+    .index("by_approval_status", ["approval_status"]),
 
   // Attendance table
   attendance: defineTable({

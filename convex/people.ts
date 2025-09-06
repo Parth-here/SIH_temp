@@ -50,6 +50,7 @@ export const createPerson = mutation({
     email: v.string(),
     phone: v.optional(v.string()),
     role: v.union(v.literal("student"), v.literal("teacher"), v.literal("admin")),
+    approval_status: v.optional(v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected"))),
     
     // Student-specific fields
     er_no: v.optional(v.string()),
@@ -68,7 +69,12 @@ export const createPerson = mutation({
     admin_role: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("people", args);
+    // Set default approval status based on role
+    const personData = {
+      ...args,
+      approval_status: "approved"
+    };
+    return await ctx.db.insert("people", personData);
   },
 });
 
@@ -122,5 +128,44 @@ export const getStudentByErNo = query({
       .query("people")
       .withIndex("by_er_no", (q) => q.eq("er_no", args.erNo))
       .first();
+  },
+});
+
+// Get people by approval status
+export const getPeopleByApprovalStatus = query({
+  args: { status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")) },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("people")
+      .withIndex("by_approval_status", (q) => q.eq("approval_status", args.status))
+      .collect();
+  },
+});
+
+// Approve a user
+export const approveUser = mutation({
+  args: { id: v.id("people") },
+  handler: async (ctx, args) => {
+    return await ctx.db.patch(args.id, { approval_status: "approved" });
+  },
+});
+
+// Reject a user
+export const rejectUser = mutation({
+  args: { id: v.id("people") },
+  handler: async (ctx, args) => {
+    return await ctx.db.patch(args.id, { approval_status: "rejected" });
+  },
+});
+
+// Get pending approvals count
+export const getPendingApprovalsCount = query({
+  args: {},
+  handler: async (ctx) => {
+    const pendingUsers = await ctx.db
+      .query("people")
+      .withIndex("by_approval_status", (q) => q.eq("approval_status", "pending"))
+      .collect();
+    return pendingUsers.length;
   },
 });
