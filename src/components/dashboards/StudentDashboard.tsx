@@ -1,21 +1,21 @@
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   IoSchoolOutline,
   IoBookOutline,
   IoTrophyOutline,
   IoClipboardOutline,
   IoCalendarOutline,
-  IoChatboxOutline,
-  IoLibraryOutline,
   IoTimeOutline,
-  IoStatsChartOutline,
   IoNotificationsOutline,
   IoCheckmarkCircleOutline,
   IoWarningOutline,
   IoAlarmOutline
 } from 'react-icons/io5'
-import { Card, CardHeader, CardTitle, CardContent, Button } from '../ui'
+import { Card, CardHeader, CardTitle, CardContent, Button, Modal, ModalBody, ModalFooter } from '../ui'
 import { useAuth } from '../../hooks/useAuth'
+import { getTodaySchedule, type ScheduleClass } from '../../services/scheduleService'
 
 // Student-specific mock data
 const studentStatsData = [
@@ -26,7 +26,8 @@ const studentStatsData = [
     icon: IoSchoolOutline,
     color: 'bg-blue-500',
     bgColor: 'bg-blue-50',
-    textColor: 'text-blue-700'
+    textColor: 'text-blue-700',
+    path: '/my-courses'
   },
   {
     title: 'Overall GPA',
@@ -35,7 +36,8 @@ const studentStatsData = [
     icon: IoTrophyOutline,
     color: 'bg-yellow-500',
     bgColor: 'bg-yellow-50',
-    textColor: 'text-yellow-700'
+    textColor: 'text-yellow-700',
+    path: '/my-grades'
   },
   {
     title: 'Assignments',
@@ -44,7 +46,8 @@ const studentStatsData = [
     icon: IoClipboardOutline,
     color: 'bg-red-500',
     bgColor: 'bg-red-50',
-    textColor: 'text-red-700'
+    textColor: 'text-red-700',
+    path: '/my-assignments'
   },
   {
     title: 'Attendance',
@@ -53,39 +56,27 @@ const studentStatsData = [
     icon: IoCheckmarkCircleOutline,
     color: 'bg-green-500',
     bgColor: 'bg-green-50',
-    textColor: 'text-green-700'
+    textColor: 'text-green-700',
+    path: '/attendance'
   }
 ]
 
-const upcomingClasses = [
-  {
-    id: 1,
-    time: '9:00 AM',
-    subject: 'Data Structures',
-    instructor: 'Dr. Smith',
-    room: 'Room 301',
-    status: 'next',
-    duration: '1h 30m'
-  },
-  {
-    id: 2,
-    time: '11:00 AM',
-    subject: 'Database Systems',
-    instructor: 'Prof. Johnson',
-    room: 'Lab 205',
-    status: 'upcoming',
-    duration: '2h'
-  },
-  {
-    id: 3,
-    time: '2:00 PM',
-    subject: 'Software Engineering',
-    instructor: 'Dr. Williams',
-    room: 'Room 108',
-    status: 'upcoming',
-    duration: '1h 30m'
-  }
-]
+// Get today's classes dynamically
+const getUpcomingClasses = () => {
+  const todaySchedule = getTodaySchedule()
+  return todaySchedule.classes.map(classItem => ({
+    id: classItem.id,
+    time: classItem.time.split(' - ')[0], // Extract start time
+    subject: classItem.subject,
+    instructor: classItem.instructor,
+    room: classItem.room,
+    status: classItem.status === 'upcoming' ? 'upcoming' : 
+            classItem.status === 'ongoing' ? 'next' : 'upcoming',
+    duration: classItem.duration || '1h 30m'
+  }))
+}
+
+const upcomingClasses = getUpcomingClasses()
 
 const recentStudentActivities = [
   {
@@ -153,46 +144,52 @@ const assignmentsDue = [
   }
 ]
 
-const studentQuickActions = [
-  {
-    title: 'View Schedule',
-    description: 'Check today\'s classes',
-    icon: IoCalendarOutline,
-    color: 'bg-blue-500',
-    action: () => console.log('View schedule')
-  },
-  {
-    title: 'Submit Assignment',
-    description: 'Upload your work',
-    icon: IoClipboardOutline,
-    color: 'bg-green-500',
-    action: () => console.log('Submit assignment')
-  },
-  {
-    title: 'Check Grades',
-    description: 'View your performance',
-    icon: IoTrophyOutline,
-    color: 'bg-yellow-500',
-    action: () => console.log('Check grades')
-  },
-  {
-    title: 'Library Resources',
-    description: 'Access study materials',
-    icon: IoLibraryOutline,
-    color: 'bg-purple-500',
-    action: () => console.log('Library resources')
-  },
-  {
-    title: 'Contact Teacher',
-    description: 'Send a message',
-    icon: IoChatboxOutline,
-    color: 'bg-indigo-500',
-    action: () => console.log('Contact teacher')
-  }
-]
+
 
 export default function StudentDashboard() {
   const { dbUser } = useAuth()
+  const navigate = useNavigate()
+  const [showAllActivities, setShowAllActivities] = useState(false)
+  const [showScheduleModal, setShowScheduleModal] = useState(false)
+  const [scheduleData, setScheduleData] = useState<ScheduleClass[]>([])
+  const [scheduleLoading, setScheduleLoading] = useState(false)
+  const [scheduleError, setScheduleError] = useState<string | null>(null)
+
+
+  const handleCardClick = (path: string) => {
+    navigate(path)
+  }
+
+  const toggleActivities = () => {
+    setShowAllActivities(!showAllActivities)
+  }
+
+  const fetchTodaySchedule = async () => {
+    console.log('=== SCHEDULE BUTTON CLICKED ===')
+    setScheduleLoading(true)
+    setScheduleError(null)
+    
+    try {
+      // Use the real schedule service instead of API call
+      const todaySchedule = getTodaySchedule()
+      console.log('Today\'s schedule:', todaySchedule)
+      
+      setScheduleData(todaySchedule.classes)
+      setShowScheduleModal(true)
+    } catch (error) {
+      console.error('Error loading schedule:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      setScheduleError(`Failed to load schedule: ${errorMessage}`)
+      setShowScheduleModal(true)
+    } finally {
+      setScheduleLoading(false)
+    }
+  }
+
+  // Show only first 3 activities by default, all if expanded
+  const displayedActivities = showAllActivities 
+    ? recentStudentActivities 
+    : recentStudentActivities.slice(0, 3)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -244,44 +241,50 @@ export default function StudentDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight break-words truncate overflow-hidden">
-            Welcome back, {dbUser?.full_name?.split(' ')[0] || 'User'}! 👨‍💼
+            Welcome back, {dbUser?.full_name?.split(' ')[0] || 'User'}!
           </h1>
           <p className="text-gray-600 mt-2 text-base sm:text-lg break-words truncate overflow-hidden">
             Here's your institution's comprehensive overview and management tools.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="lg" className="shadow-md hover:shadow-lg">
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="shadow-md hover:shadow-lg"
+            onClick={fetchTodaySchedule}
+            disabled={scheduleLoading}
+          >
             <IoCalendarOutline className="w-5 h-5 mr-2" />
-            My Schedule
-          </Button>
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl">
-            <IoNotificationsOutline className="w-5 h-5 mr-2" />
-            Notifications
+            {scheduleLoading ? 'Loading...' : 'My Schedule'}
           </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 overflow-x-auto">
         {studentStatsData.map((stat, index) => (
           <motion.div
             key={stat.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
+            className="min-w-[200px]"
           >
-            <Card className="hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden">
+            <Card 
+              className="hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden h-full cursor-pointer hover:scale-105 active:scale-95"
+              onClick={() => handleCardClick(stat.path)}
+            >
               <div className={`h-2 ${stat.color}`}></div>
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col items-center text-center space-y-4">
                   <div className={`p-4 rounded-2xl ${stat.bgColor}`}>
                     <stat.icon className={`w-8 h-8 ${stat.textColor}`} />
                   </div>
-                  <div className="flex-1 min-w-0">
-<p className="text-sm font-semibold text-gray-600 uppercase tracking-wider truncate\">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 truncate\">{stat.value}</p>
-                    <p className="text-sm text-gray-500 mt-1 truncate\">{stat.subtitle}</p>
+                  <div className="w-full">
+                    <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                    <p className="text-sm text-gray-500 mt-1">{stat.subtitle}</p>
                   </div>
                 </div>
               </CardContent>
@@ -290,16 +293,14 @@ export default function StudentDashboard() {
         ))}
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Today's Classes and Assignments */}
+      {/* Main Content - Vertical Layout */}
+      <div className="space-y-8">
+        {/* Today's Classes */}
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="lg:col-span-2 space-y-6"
         >
-          {/* Today's Classes */}
           <Card className="shadow-xl border-0">
             <CardHeader className="bg-blue-50 border-b">
               <CardTitle className="flex items-center gap-3 text-xl">
@@ -353,8 +354,14 @@ export default function StudentDashboard() {
               ))}
             </CardContent>
           </Card>
+        </motion.div>
 
-          {/* Assignments Due */}
+        {/* Assignments Due Soon */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
           <Card className="shadow-xl border-0">
             <CardHeader className="bg-orange-50 border-b">
               <CardTitle className="flex items-center gap-3 text-xl">
@@ -370,7 +377,7 @@ export default function StudentDashboard() {
                   key={assignment.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
+                  transition={{ delay: 0.7 + index * 0.1 }}
                   className="p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all"
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -401,52 +408,12 @@ export default function StudentDashboard() {
           </Card>
         </motion.div>
 
-        {/* Quick Actions & Recent Activities */}
+        {/* Recent Activities */}
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          className="space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
         >
-          {/* Quick Actions */}
-          <Card className="shadow-xl border-0">
-            <CardHeader className="bg-purple-50 border-b">
-              <CardTitle className="flex items-center gap-3 text-lg">
-                <div className="p-2 bg-purple-500 rounded-lg">
-                  <IoStatsChartOutline className="w-5 h-5 text-white" />
-                </div>
-                Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 p-4">
-              {studentQuickActions.map((action, index) => (
-                <motion.div
-                  key={action.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                >
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start p-3 h-auto hover:bg-gray-50 hover:shadow-md transition-all"
-                    onClick={action.action}
-                  >
-                    <div className="flex items-center gap-3 w-full min-w-0">
-                      <div className={`p-2 ${action.color} rounded-lg text-white shadow-md`}>
-                        <action.icon className="w-4 h-4" />
-                      </div>
-                      <div className="text-left flex-1 min-w-0">
-                        <div className="font-semibold text-gray-900 text-sm truncate">{action.title}</div>
-                        <div className="text-xs text-gray-600 truncate">{action.description}</div>
-                      </div>
-                    </div>
-                  </Button>
-                </motion.div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Recent Activities */}
           <Card className="shadow-xl border-0">
             <CardHeader className="bg-green-50 border-b">
               <CardTitle className="flex items-center gap-3 text-lg">
@@ -456,34 +423,147 @@ export default function StudentDashboard() {
                 Recent Activity
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 p-4">
-              {recentStudentActivities.map((activity, index) => (
+            <CardContent className="space-y-4 p-6">
+              {displayedActivities.map((activity, index) => (
                 <motion.div
                   key={activity.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 + index * 0.1 }}
-                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  transition={{ delay: 0.9 + index * 0.1 }}
+                  className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <div className={`p-2 rounded-lg ${getActivityStatusColor(activity.status)}`}>
-                    <activity.icon className="w-4 h-4" />
+                  <div className={`p-3 rounded-lg ${getActivityStatusColor(activity.status)}`}>
+                    <activity.icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm truncate">{activity.title}</p>
-                    <p className="text-xs text-gray-600 truncate">{activity.course}</p>
-                    <p className="text-xs text-gray-500">{activity.time}</p>
+                    <p className="font-semibold text-gray-900 text-base mb-1">{activity.title}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-600 font-medium">{activity.course}</p>
+                      <p className="text-sm text-gray-500">{activity.time}</p>
+                    </div>
                   </div>
                 </motion.div>
               ))}
-              <div className="pt-3 border-t border-gray-200">
-                <Button variant="ghost" className="w-full text-sm py-2">
-                  View All Activities
-                </Button>
-              </div>
+              
+              {recentStudentActivities.length > 3 && (
+                <div className="pt-3 border-t border-gray-200">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-sm py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    onClick={toggleActivities}
+                  >
+                    {showAllActivities ? 'View Less' : 'View More'}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
       </div>
+
+      {/* Schedule Modal */}
+      <Modal
+        isOpen={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        title="Today's Schedule"
+        size="lg"
+      >
+        <ModalBody>
+          {scheduleError ? (
+            <div className="text-center py-8">
+              <IoWarningOutline className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <p className="text-red-600 font-medium">{scheduleError}</p>
+              <Button 
+                variant="outline" 
+                onClick={fetchTodaySchedule}
+                className="mt-4"
+              >
+                Try Again
+              </Button>
+            </div>
+          ) : scheduleData.length === 0 ? (
+            <div className="text-center py-8">
+              <IoCalendarOutline className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 font-medium">No classes scheduled for today</p>
+              <p className="text-gray-500 text-sm mt-2">Enjoy your free day!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {scheduleData.map((lecture, index) => (
+                <motion.div
+                  key={lecture.id || index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="p-4 rounded-lg border border-gray-200 hover:shadow-md transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-center min-w-[80px]">
+                        <p className="font-bold text-gray-900 text-lg">
+                          {lecture.time}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {lecture.duration || ''}
+                        </p>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-900 text-lg">
+                          {lecture.subject}
+                        </h3>
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                          <span className="truncate">
+                            👨‍🏫 {lecture.instructor}
+                          </span>
+                          <span className="truncate">
+                            📍 {lecture.room}
+                          </span>
+                          <span className="truncate">
+                            📚 {lecture.type}
+                          </span>
+                        </div>
+                        {lecture.description && (
+                          <p className="text-sm text-gray-500 mt-2">
+                            {lecture.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {lecture.status === 'ongoing' && (
+                        <div className="flex items-center gap-1 text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-sm font-semibold">
+                          <IoAlarmOutline className="w-4 h-4" />
+                          Ongoing
+                        </div>
+                      )}
+                      {lecture.status === 'upcoming' && (
+                        <div className="flex items-center gap-1 text-green-600 bg-green-100 px-3 py-1 rounded-full text-sm font-semibold">
+                          <IoAlarmOutline className="w-4 h-4" />
+                          Upcoming
+                        </div>
+                      )}
+                      {lecture.status === 'completed' && (
+                        <div className="flex items-center gap-1 text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-sm font-semibold">
+                          <IoCheckmarkCircleOutline className="w-4 h-4" />
+                          Completed
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowScheduleModal(false)}
+          >
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </motion.div>
   )
 }

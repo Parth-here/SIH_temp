@@ -2,12 +2,11 @@ import { motion } from 'framer-motion'
 import { 
   IoDocumentTextOutline, 
   IoTimeOutline, 
-  IoTrophyOutline,
   IoCheckmarkCircleOutline,
   IoWarningOutline,
   IoCalendarOutline
 } from 'react-icons/io5'
-import { Card, CardHeader, CardTitle, CardContent, Button } from '../../components/ui'
+import { Card, CardContent, Button } from '../../components/ui'
 
 // Mock data for assignments
 const assignments = [
@@ -271,7 +270,7 @@ export default function StudentAssignmentsPage() {
                           </Button>
                         )}
                         {assignment.status === 'overdue' && (
-                          <Button size="sm" variant="destructive">
+                          <Button size="sm" variant="danger">
                             Submit Now
                           </Button>
                         )}

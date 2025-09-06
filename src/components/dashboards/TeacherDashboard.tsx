@@ -234,25 +234,26 @@ export default function TeacherDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 overflow-x-auto">
         {teacherStatsData.map((stat, index) => (
           <motion.div
             key={stat.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
+            className="min-w-[200px]"
           >
-            <Card className="hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden">
+            <Card className="hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden h-full">
               <div className={`h-2 ${stat.color}`}></div>
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col items-center text-center space-y-4">
                   <div className={`p-4 rounded-2xl ${stat.bgColor}`}>
                     <stat.icon className={`w-8 h-8 ${stat.textColor}`} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider truncate">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 truncate">{stat.value}</p>
-                    <p className="text-sm text-gray-500 mt-1 truncate">{stat.subtitle}</p>
+                  <div className="w-full">
+                    <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                    <p className="text-sm text-gray-500 mt-1">{stat.subtitle}</p>
                   </div>
                 </div>
               </CardContent>

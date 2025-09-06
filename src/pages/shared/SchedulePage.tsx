@@ -10,142 +10,7 @@ import {
   IoChevronForwardOutline
 } from 'react-icons/io5'
 import { Card, CardHeader, CardTitle, CardContent, Button } from '../../components/ui'
-
-// Mock data for schedule
-const weeklySchedule = [
-  {
-    day: 'Monday',
-    date: '2024-01-15',
-    classes: [
-      {
-        id: 1,
-        time: '9:00 AM - 10:30 AM',
-        subject: 'Data Structures',
-        instructor: 'Dr. Smith',
-        room: 'Room 301',
-        type: 'Lecture',
-        color: 'bg-blue-500'
-      },
-      {
-        id: 2,
-        time: '2:00 PM - 3:30 PM',
-        subject: 'Software Engineering',
-        instructor: 'Dr. Williams',
-        room: 'Room 108',
-        type: 'Lecture',
-        color: 'bg-green-500'
-      }
-    ]
-  },
-  {
-    day: 'Tuesday',
-    date: '2024-01-16',
-    classes: [
-      {
-        id: 3,
-        time: '8:00 AM - 9:30 AM',
-        subject: 'Mathematics',
-        instructor: 'Dr. Brown',
-        room: 'Room 205',
-        type: 'Lecture',
-        color: 'bg-purple-500'
-      },
-      {
-        id: 4,
-        time: '11:00 AM - 12:30 PM',
-        subject: 'Database Systems',
-        instructor: 'Prof. Johnson',
-        room: 'Lab 205',
-        type: 'Lab',
-        color: 'bg-orange-500'
-      }
-    ]
-  },
-  {
-    day: 'Wednesday',
-    date: '2024-01-17',
-    classes: [
-      {
-        id: 5,
-        time: '9:00 AM - 10:30 AM',
-        subject: 'Data Structures',
-        instructor: 'Dr. Smith',
-        room: 'Room 301',
-        type: 'Lecture',
-        color: 'bg-blue-500'
-      },
-      {
-        id: 6,
-        time: '2:00 PM - 3:30 PM',
-        subject: 'Software Engineering',
-        instructor: 'Dr. Williams',
-        room: 'Room 108',
-        type: 'Lecture',
-        color: 'bg-green-500'
-      }
-    ]
-  },
-  {
-    day: 'Thursday',
-    date: '2024-01-18',
-    classes: [
-      {
-        id: 7,
-        time: '8:00 AM - 9:30 AM',
-        subject: 'Mathematics',
-        instructor: 'Dr. Brown',
-        room: 'Room 205',
-        type: 'Lecture',
-        color: 'bg-purple-500'
-      },
-      {
-        id: 8,
-        time: '11:00 AM - 12:30 PM',
-        subject: 'Database Systems',
-        instructor: 'Prof. Johnson',
-        room: 'Lab 205',
-        type: 'Lab',
-        color: 'bg-orange-500'
-      }
-    ]
-  },
-  {
-    day: 'Friday',
-    date: '2024-01-19',
-    classes: [
-      {
-        id: 9,
-        time: '9:00 AM - 10:30 AM',
-        subject: 'Data Structures',
-        instructor: 'Dr. Smith',
-        room: 'Room 301',
-        type: 'Lecture',
-        color: 'bg-blue-500'
-      }
-    ]
-  }
-]
-
-const todayClasses = [
-  {
-    id: 1,
-    time: '9:00 AM - 10:30 AM',
-    subject: 'Data Structures',
-    instructor: 'Dr. Smith',
-    room: 'Room 301',
-    type: 'Lecture',
-    status: 'upcoming'
-  },
-  {
-    id: 2,
-    time: '2:00 PM - 3:30 PM',
-    subject: 'Software Engineering',
-    instructor: 'Dr. Williams',
-    room: 'Room 108',
-    type: 'Lecture',
-    status: 'upcoming'
-  }
-]
+import { getWeeklySchedule, getTodaySchedule, getWeeklyClassesCount, getTodayClassesCount } from '../../services/scheduleService'
 
 export default function SchedulePage() {
   const currentDate = new Date()
@@ -155,6 +20,11 @@ export default function SchedulePage() {
     month: 'long', 
     day: 'numeric' 
   })
+
+  // Get data from schedule service
+  const weeklySchedule = getWeeklySchedule()
+  const todaySchedule = getTodaySchedule()
+  const todayClasses = todaySchedule.classes
 
   return (
     <motion.div
@@ -308,7 +178,7 @@ export default function SchedulePage() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Classes</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {weeklySchedule.reduce((sum, day) => sum + day.classes.length, 0)}
+                  {getWeeklyClassesCount()}
                 </p>
               </div>
             </div>
@@ -323,7 +193,7 @@ export default function SchedulePage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Today's Classes</p>
-                <p className="text-2xl font-bold text-gray-900">{todayClasses.length}</p>
+                <p className="text-2xl font-bold text-gray-900">{getTodayClassesCount()}</p>
               </div>
             </div>
           </CardContent>
