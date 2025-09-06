@@ -16,11 +16,6 @@ export default function Sidebar({ navigation, sidebarOpen, setSidebarOpen, sideb
   const { role } = useAuth();
   const location = useLocation();
 
-  const userRole = role || 'admin';
-
-  const filteredNavigation = navigation.filter(item => 
-    item.roles.includes(userRole)
-  );
 
   return (
     <>
@@ -66,7 +61,7 @@ export default function Sidebar({ navigation, sidebarOpen, setSidebarOpen, sideb
         
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-hide">
-          {filteredNavigation.map((item, index) => {
+          {navigation.map((item, index) => {
             const isActive = location.pathname === item.href
             
             return (

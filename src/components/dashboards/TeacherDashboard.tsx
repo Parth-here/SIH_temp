@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import {
   IoBookOutline,
   IoPeopleOutline,
@@ -134,46 +135,54 @@ const recentTeacherActivities = [
   }
 ]
 
-const teacherQuickActions = [
-  {
-    title: 'Take Attendance',
-    description: 'Mark today\'s attendance',
-    icon: IoClipboardOutline,
-    color: 'bg-green-500',
-    action: () => console.log('Take attendance')
-  },
-  {
-    title: 'Create Assignment',
-    description: 'Add new assignment',
-    icon: IoDocumentTextOutline,
-    color: 'bg-blue-500',
-    action: () => console.log('Create assignment')
-  },
-  {
-    title: 'Grade Submissions',
-    description: 'Review student work',
-    icon: IoTrophyOutline,
-    color: 'bg-purple-500',
-    action: () => console.log('Grade submissions')
-  },
-  {
-    title: 'Send Message',
-    description: 'Contact students/parents',
-    icon: IoChatboxOutline,
-    color: 'bg-indigo-500',
-    action: () => console.log('Send message')
-  },
-  {
-    title: 'Class Materials',
-    description: 'Upload resources',
-    icon: IoLibraryOutline,
-    color: 'bg-teal-500',
-    action: () => console.log('Upload materials')
-  }
-]
-
 export default function TeacherDashboard() {
   const { dbUser } = useAuth()
+  const navigate = useNavigate()
+
+  const teacherQuickActions = [
+    {
+      title: 'Take Attendance',
+      description: 'Mark today\'s attendance',
+      icon: IoClipboardOutline,
+      color: 'bg-green-500',
+      action: () => navigate('/attendance')
+    },
+    {
+      title: 'Create Assignment',
+      description: 'Add new assignment',
+      icon: IoDocumentTextOutline,
+      color: 'bg-blue-500',
+      action: () => navigate('/assignments')
+    },
+    {
+      title: 'Grade Submissions',
+      description: 'Review student work',
+      icon: IoTrophyOutline,
+      color: 'bg-purple-500',
+      action: () => navigate('/grades')
+    },
+    {
+      title: 'Send Message',
+      description: 'Contact students/parents',
+      icon: IoChatboxOutline,
+      color: 'bg-indigo-500',
+      action: () => navigate('/messages')
+    },
+    {
+      title: 'View Students',
+      description: 'Check student progress',
+      icon: IoPeopleOutline,
+      color: 'bg-orange-500',
+      action: () => navigate('/students')
+    },
+    {
+      title: 'My Classes',
+      description: 'Manage your classes',
+      icon: IoLibraryOutline,
+      color: 'bg-teal-500',
+      action: () => navigate('/classes')
+    }
+  ]
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -204,11 +213,20 @@ export default function TeacherDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="lg" className="shadow-md hover:shadow-lg">
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="shadow-md hover:shadow-lg"
+            onClick={() => navigate('/schedule')}
+          >
             <IoCalendarOutline className="w-5 h-5 mr-2" />
             My Schedule
           </Button>
-          <Button size="lg" className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-lg hover:shadow-xl">
+          <Button 
+            size="lg" 
+            className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-lg hover:shadow-xl"
+            onClick={() => navigate('/assignments')}
+          >
             <IoAddOutline className="w-5 h-5 mr-2" />
             Quick Actions
           </Button>
@@ -294,7 +312,11 @@ export default function TeacherDashboard() {
                           Now
                         </div>
                       ) : (
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => navigate('/classes')}
+                        >
                           <IoBookOutline className="w-4 h-4 mr-1" />
                           Prepare
                         </Button>
@@ -386,7 +408,11 @@ export default function TeacherDashboard() {
                 </motion.div>
               ))}
               <div className="pt-3 border-t border-gray-200">
-                <Button variant="ghost" className="w-full text-sm py-2">
+                <Button 
+                  variant="ghost" 
+                  className="w-full text-sm py-2"
+                  onClick={() => navigate('/grades')}
+                >
                   View All Activities
                 </Button>
               </div>
