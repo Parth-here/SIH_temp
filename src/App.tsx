@@ -30,6 +30,7 @@ import LibraryPage from './pages/student/LibraryPage'
 import CoursesPage from './pages/shared/CoursesPage'
 import AttendancePage from './pages/shared/AttendancePage'
 
+
 function App() {
   const { isSignedIn, isLoaded, dbUser, approvalStatus, role } = useAuth()
 
