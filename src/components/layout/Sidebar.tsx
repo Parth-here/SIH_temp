@@ -46,14 +46,13 @@ export default function Sidebar({ navigation, sidebarOpen, setSidebarOpen, sideb
         )}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between h-16 px-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="flex items-center gap-3 relative z-10">
-            <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+        <div className="flex items-center justify-between h-16 px-6 bg-blue-600 text-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white/20 rounded-xl">
               <IoSchoolOutline className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-lg font-bold">EduSystem</h1>
+              <h1 className="text-lg font-bold">KNG</h1>
               <p className="text-xs text-white/80">Academic Portal</p>
             </div>
           </div>
@@ -83,14 +82,14 @@ export default function Sidebar({ navigation, sidebarOpen, setSidebarOpen, sideb
                   className={clsx(
                     'group relative flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 overflow-hidden',
                     isActive 
-                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg transform scale-105' 
-                      : 'text-gray-600 hover:bg-gradient-to-r hover:from-gray-100 hover:to-indigo-50 hover:text-indigo-700 hover:scale-105'
+                      ? 'bg-blue-600 text-white shadow-lg' 
+                      : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
                   )}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeBackground"
-                      className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl"
+                      className="absolute inset-0 bg-blue-600 rounded-xl"
                       transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                     />
                   )}
@@ -100,16 +99,16 @@ export default function Sidebar({ navigation, sidebarOpen, setSidebarOpen, sideb
                       'p-2 rounded-lg transition-all duration-200',
                       isActive 
                         ? 'bg-white/20 shadow-md' 
-                        : 'group-hover:bg-indigo-100 group-hover:shadow-sm'
+                        : 'group-hover:bg-blue-100 group-hover:shadow-sm'
                     )}>
                       <item.icon className={clsx(
                         'w-4 h-4 transition-colors duration-200',
-                        isActive ? 'text-white' : 'text-gray-500 group-hover:text-indigo-600'
+                        isActive ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'
                       )} />
                     </div>
                     <span className={clsx(
                       'font-medium transition-colors duration-200',
-                      isActive ? 'text-white' : 'text-gray-700 group-hover:text-indigo-700'
+                      isActive ? 'text-white' : 'text-gray-700 group-hover:text-blue-700'
                     )}>
                       {item.name}
                     </span>
@@ -129,9 +128,9 @@ export default function Sidebar({ navigation, sidebarOpen, setSidebarOpen, sideb
         </nav>
         
         {/* Footer */}
-        <div className="p-4 border-t border-secondary-100">
-          <div className="text-xs text-secondary-500 text-center">
-            © 2024 EduSystem
+        <div className="p-4 border-t border-gray-200">
+          <div className="text-xs text-gray-500 text-center">
+            © 2024 KNG
           </div>
         </div>
       </div>

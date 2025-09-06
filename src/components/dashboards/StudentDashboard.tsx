@@ -24,7 +24,7 @@ const studentStatsData = [
     value: '8',
     subtitle: 'Currently Enrolled',
     icon: IoSchoolOutline,
-    color: 'bg-gradient-to-r from-blue-500 to-cyan-600',
+    color: 'bg-blue-500',
     bgColor: 'bg-blue-50',
     textColor: 'text-blue-700'
   },
@@ -33,7 +33,7 @@ const studentStatsData = [
     value: '3.7',
     subtitle: 'Current Semester',
     icon: IoTrophyOutline,
-    color: 'bg-gradient-to-r from-yellow-500 to-orange-600',
+    color: 'bg-yellow-500',
     bgColor: 'bg-yellow-50',
     textColor: 'text-yellow-700'
   },
@@ -42,7 +42,7 @@ const studentStatsData = [
     value: '12',
     subtitle: 'Due This Week',
     icon: IoClipboardOutline,
-    color: 'bg-gradient-to-r from-red-500 to-pink-600',
+    color: 'bg-red-500',
     bgColor: 'bg-red-50',
     textColor: 'text-red-700'
   },
@@ -51,7 +51,7 @@ const studentStatsData = [
     value: '92%',
     subtitle: 'This Semester',
     icon: IoCheckmarkCircleOutline,
-    color: 'bg-gradient-to-r from-green-500 to-emerald-600',
+    color: 'bg-green-500',
     bgColor: 'bg-green-50',
     textColor: 'text-green-700'
   }
@@ -243,8 +243,8 @@ export default function StudentDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-blue-900 bg-clip-text text-transparent leading-tight break-words truncate overflow-hidden">
-            Welcome back, Admin {dbUser?.full_name?.split(' ')[0] || 'User'}! 👨‍💼
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight break-words truncate overflow-hidden">
+            Welcome back, {dbUser?.full_name?.split(' ')[0] || 'User'}! 👨‍💼
           </h1>
           <p className="text-gray-600 mt-2 text-base sm:text-lg break-words truncate overflow-hidden">
             Here's your institution's comprehensive overview and management tools.
@@ -255,7 +255,7 @@ export default function StudentDashboard() {
             <IoCalendarOutline className="w-5 h-5 mr-2" />
             My Schedule
           </Button>
-          <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 shadow-lg hover:shadow-xl">
+          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl">
             <IoNotificationsOutline className="w-5 h-5 mr-2" />
             Notifications
           </Button>
@@ -279,8 +279,8 @@ export default function StudentDashboard() {
                     <stat.icon className={`w-8 h-8 ${stat.textColor}`} />
                   </div>
                   <div className="flex-1 min-w-0">
-<p className="text-sm font-semibold text-gray-600 uppercase tracking-wider truncate\">{stat.title}</p>\r
-                    <p className="text-3xl font-bold text-gray-900 truncate\">{stat.value}</p>\r
+<p className="text-sm font-semibold text-gray-600 uppercase tracking-wider truncate\">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900 truncate\">{stat.value}</p>
                     <p className="text-sm text-gray-500 mt-1 truncate\">{stat.subtitle}</p>
                   </div>
                 </div>
@@ -301,7 +301,7 @@ export default function StudentDashboard() {
         >
           {/* Today's Classes */}
           <Card className="shadow-xl border-0">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+            <CardHeader className="bg-blue-50 border-b">
               <CardTitle className="flex items-center gap-3 text-xl">
                 <div className="p-2 bg-blue-500 rounded-lg">
                   <IoCalendarOutline className="w-6 h-6 text-white" />
@@ -356,7 +356,7 @@ export default function StudentDashboard() {
 
           {/* Assignments Due */}
           <Card className="shadow-xl border-0">
-            <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 border-b">
+            <CardHeader className="bg-orange-50 border-b">
               <CardTitle className="flex items-center gap-3 text-xl">
                 <div className="p-2 bg-orange-500 rounded-lg">
                   <IoClipboardOutline className="w-6 h-6 text-white" />
@@ -410,7 +410,7 @@ export default function StudentDashboard() {
         >
           {/* Quick Actions */}
           <Card className="shadow-xl border-0">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b">
+            <CardHeader className="bg-purple-50 border-b">
               <CardTitle className="flex items-center gap-3 text-lg">
                 <div className="p-2 bg-purple-500 rounded-lg">
                   <IoStatsChartOutline className="w-5 h-5 text-white" />
@@ -448,7 +448,7 @@ export default function StudentDashboard() {
 
           {/* Recent Activities */}
           <Card className="shadow-xl border-0">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50 border-b">
+            <CardHeader className="bg-green-50 border-b">
               <CardTitle className="flex items-center gap-3 text-lg">
                 <div className="p-2 bg-green-500 rounded-lg">
                   <IoTimeOutline className="w-5 h-5 text-white" />

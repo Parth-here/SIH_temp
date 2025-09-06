@@ -219,7 +219,7 @@ export default function AdminDashboard() {
       <div className="w-full flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-6">
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-blue-900 bg-clip-text text-transparent leading-tight break-words">
-            Welcome back, Admin {dbUser?.full_name?.split(' ')[0] || 'User'}! 👨‍💼
+            Welcome back, {dbUser?.full_name?.split(' ')[0] || 'User'}! 👨‍💼
           </h1>
           <p className="text-gray-600 mt-2 text-base sm:text-lg break-words">
             Here's your institution's comprehensive overview and management tools.
@@ -283,39 +283,33 @@ export default function AdminDashboard() {
       )}
 
       {/* Stats Cards */}
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {adminStatsData.map((stat, index) => (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Card className="hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden w-full">
-              <div className={`h-2 ${stat.color}`}></div>
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                    <div className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl ${stat.bgColor} shrink-0`}>
-                      <stat.icon className={`w-6 h-6 sm:w-8 sm:h-8 ${stat.textColor}`} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider truncate">{stat.title}</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 truncate">{stat.value}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 self-start sm:self-auto shrink-0">
-                    <IoTrendingUpOutline className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                    <span className="font-bold text-green-600 text-base sm:text-lg whitespace-nowrap">
-                      {stat.change}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+    {/* Stats Cards - Vertical Layout */}
+<div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+  {adminStatsData.map((stat, index) => (
+    <motion.div
+      key={stat.title}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+    >
+      <Card className="hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden w-full flex flex-col">
+        <div className={`h-2 ${stat.color}`}></div>
+        <CardContent className="p-6 flex flex-col items-center text-center space-y-2">
+          <div className={`p-4 rounded-2xl ${stat.bgColor}`}>
+            <stat.icon className={`w-8 h-8 ${stat.textColor}`} />
+          </div>
+          <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">{stat.title}</p>
+          <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+          <div className="flex items-center gap-1 text-green-600 text-base font-semibold">
+            <IoTrendingUpOutline className="w-4 h-4" />
+            <span>{stat.change}</span>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  ))}
+</div>
+
 
       {/* Main Content Grid */}
       <div className="w-full grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">

@@ -25,6 +25,8 @@ import MessagesPage from './pages/shared/MessagesPage'
 // Student Pages
 import MyCoursesPage from './pages/student/MyCoursesPage'
 import LibraryPage from './pages/student/LibraryPage'
+import StudentAssignmentsPage from './pages/student/StudentAssignmentsPage'
+import StudentGradesPage from './pages/student/StudentGradesPage'
 
 // Shared Pages
 import CoursesPage from './pages/shared/CoursesPage'
@@ -51,11 +53,11 @@ function App() {
         <div className="max-w-md w-full mx-4">
           <div className="bg-white rounded-2xl shadow-soft-xl p-8 text-center">
             <div className="mb-8">
-              <div className="w-16 h-16 bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-white">🎓</span>
               </div>
               <h1 className="text-2xl font-bold text-secondary-900 mb-2">
-                EduSystem
+                KNG
               </h1>
               <p className="text-secondary-600">
                 Academic Management Platform
@@ -68,7 +70,7 @@ function App() {
               </p>
               
               <SignInButton mode="modal">
-                <button className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <button className="w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
                   Sign In to Continue
                 </button>
               </SignInButton>
@@ -123,6 +125,8 @@ function App() {
             {/* Student Routes */}
             <Route path="my-courses" element={role === 'student' ? <MyCoursesPage /> : <Navigate to="/" />} />
             <Route path="library" element={role === 'student' ? <LibraryPage /> : <Navigate to="/" />} />
+            <Route path="my-assignments" element={role === 'student' ? <StudentAssignmentsPage /> : <Navigate to="/" />} />
+            <Route path="my-grades" element={role === 'student' ? <StudentGradesPage /> : <Navigate to="/" />} />
             
             {/* Shared Routes */}
             <Route path="courses" element={<CoursesPage />} />
